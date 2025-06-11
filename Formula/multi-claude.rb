@@ -6,7 +6,7 @@ class MultiClaude < Formula
   url "https://github.com/sutaminajing40/Claude-Code-Communication/archive/refs/tags/v1.0.1.tar.gz"
   sha256 "5e6b2ae1bad3fc3be878a1f2b73c76a280a3af87a42dff1eb4312bf45f18b0a0"
   license "MIT"
-  revision 3
+  revision 4
 
   depends_on "tmux"
 
@@ -26,30 +26,59 @@ class MultiClaude < Formula
     multi_claude_dir = "#{Dir.home}/.multi-claude"
     
     # ディレクトリ作成（既存の場合も権限修正）
-    FileUtils.mkdir_p(multi_claude_dir)
-    FileUtils.mkdir_p("#{multi_claude_dir}/instructions")
+    begin
+      FileUtils.mkdir_p(multi_claude_dir)
+      FileUtils.mkdir_p("#{multi_claude_dir}/instructions")
+    rescue Errno::EPERM => e
+      # 権限エラーの場合はsystemコマンドで作成
+      system "mkdir", "-p", multi_claude_dir
+      system "mkdir", "-p", "#{multi_claude_dir}/instructions"
+    end
     
     # 必要なファイルをコピー（既存ファイルは削除してからコピー）
     ["setup.sh", "agent-send.sh"].each do |file|
       target = "#{multi_claude_dir}/#{file}"
-      FileUtils.rm_f(target) if File.exist?(target)
-      FileUtils.cp("#{bin}/#{file}", target)
-      FileUtils.chmod(0755, target)
+      begin
+        FileUtils.rm_f(target) if File.exist?(target)
+        FileUtils.cp("#{bin}/#{file}", target)
+        FileUtils.chmod(0755, target)
+      rescue => e
+        # エラーの場合はsystemコマンドで実行
+        system "rm", "-f", target if File.exist?(target)
+        system "cp", "#{bin}/#{file}", target
+        system "chmod", "755", target
+      end
     end
     
     target_claude = "#{multi_claude_dir}/CLAUDE_template.md"
-    FileUtils.rm_f(target_claude) if File.exist?(target_claude)
-    FileUtils.cp("#{share}/CLAUDE_template.md", target_claude)
+    begin
+      FileUtils.rm_f(target_claude) if File.exist?(target_claude)
+      FileUtils.cp("#{share}/CLAUDE_template.md", target_claude)
+    rescue => e
+      system "rm", "-f", target_claude if File.exist?(target_claude)
+      system "cp", "#{share}/CLAUDE_template.md", target_claude
+    end
     
     # instructionsディレクトリを更新
-    FileUtils.rm_rf("#{multi_claude_dir}/instructions")
-    FileUtils.cp_r("#{share}/instructions", multi_claude_dir)
+    begin
+      FileUtils.rm_rf("#{multi_claude_dir}/instructions")
+      FileUtils.cp_r("#{share}/instructions", multi_claude_dir)
+    rescue => e
+      system "rm", "-rf", "#{multi_claude_dir}/instructions"
+      system "cp", "-r", "#{share}/instructions", multi_claude_dir
+    end
 
     # グローバルコマンド作成（オリジナルをそのままコピー）
     global_script = "#{multi_claude_dir}/multi-claude-global"
-    FileUtils.rm_f(global_script) if File.exist?(global_script)
-    FileUtils.cp("#{bin}/multi-claude", global_script)
-    FileUtils.chmod(0755, global_script)
+    begin
+      FileUtils.rm_f(global_script) if File.exist?(global_script)
+      FileUtils.cp("#{bin}/multi-claude", global_script)
+      FileUtils.chmod(0755, global_script)
+    rescue => e
+      system "rm", "-f", global_script if File.exist?(global_script)
+      system "cp", "#{bin}/multi-claude", global_script
+      system "chmod", "755", global_script
+    end
 
     # ~/bin ディレクトリとシンボリックリンク作成
     bin_dir = "#{Dir.home}/bin"
