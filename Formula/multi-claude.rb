@@ -33,9 +33,9 @@ class MultiClaude < Formula
     FileUtils.cp("#{share}/CLAUDE_template.md", multi_claude_dir, preserve: false)
     FileUtils.cp_r("#{share}/instructions/.", "#{multi_claude_dir}/instructions/", remove_destination: true)
 
-    # グローバルコマンド作成
+    # グローバルコマンド作成（オリジナルをそのままコピー）
     global_script = "#{multi_claude_dir}/multi-claude-global"
-    File.write(global_script, File.read("#{bin}/multi-claude"))
+    FileUtils.cp("#{bin}/multi-claude", global_script, preserve: true)
     system "chmod", "+x", global_script
 
     # ~/bin ディレクトリとシンボリックリンク作成
