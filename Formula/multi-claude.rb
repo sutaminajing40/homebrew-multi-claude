@@ -4,6 +4,7 @@ class MultiClaude < Formula
   url "https://github.com/sutaminajing40/Claude-Code-Communication/archive/refs/tags/v1.0.1.tar.gz"
   sha256 "d775edb82bf436fea2837dfaec41c62c3561a219b72d9cba7d99d84c2b1df1de"
   license "MIT"
+  revision 1
 
   depends_on "tmux"
 
