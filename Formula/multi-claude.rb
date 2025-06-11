@@ -21,14 +21,16 @@ class MultiClaude < Formula
   def post_install
     # ~/.multi-claude ディレクトリを作成
     multi_claude_dir = "#{Dir.home}/.multi-claude"
-    system "mkdir", "-p", multi_claude_dir
-    system "mkdir", "-p", "#{multi_claude_dir}/instructions"
-
-    # 必要なファイルをコピー
-    system "cp", "#{bin}/setup.sh", multi_claude_dir
-    system "cp", "#{bin}/agent-send.sh", multi_claude_dir
-    system "cp", "#{share}/CLAUDE_template.md", multi_claude_dir
-    system "cp", "-r", "#{share}/instructions/", multi_claude_dir
+    
+    # ディレクトリ作成（既存の場合も権限修正）
+    FileUtils.mkdir_p(multi_claude_dir)
+    FileUtils.mkdir_p("#{multi_claude_dir}/instructions")
+    
+    # 必要なファイルをコピー（強制上書き）
+    FileUtils.cp("#{bin}/setup.sh", multi_claude_dir, preserve: false)
+    FileUtils.cp("#{bin}/agent-send.sh", multi_claude_dir, preserve: false)
+    FileUtils.cp("#{share}/CLAUDE_template.md", multi_claude_dir, preserve: false)
+    FileUtils.cp_r("#{share}/instructions/.", "#{multi_claude_dir}/instructions/", remove_destination: true)
 
     # グローバルコマンド作成
     global_script = "#{multi_claude_dir}/multi-claude-global"
