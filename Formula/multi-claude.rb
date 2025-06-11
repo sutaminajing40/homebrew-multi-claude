@@ -12,14 +12,10 @@ class MultiClaude < Formula
     bin.install "multi-claude"
     bin.install "setup.sh"
     bin.install "agent-send.sh"
-    bin.install "install.sh"
 
     # 設定ファイルをshareにインストール
     share.install "instructions"
     share.install "CLAUDE.md" => "CLAUDE_template.md"
-
-    # グローバル設定ディレクトリ作成用のスクリプト
-    (prefix/"libexec").install "install.sh"
   end
 
   def post_install
