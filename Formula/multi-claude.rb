@@ -1,8 +1,8 @@
 class MultiClaude < Formula
   desc "グローバルで動作するマルチエージェント Claude Code システム"
   homepage "https://github.com/sutaminajing40/Claude-Code-Communication"
-  url "https://github.com/sutaminajing40/Claude-Code-Communication/archive/refs/tags/v1.0.11.tar.gz"
-  sha256 "9998d879ff9b2d8b756746ccd6ae9dd9c8017997dd6d4d2f0b49173fad39068d"
+  url "https://github.com/sutaminajing40/Claude-Code-Communication/archive/refs/tags/v1.0.12.tar.gz"
+  sha256 "1cf597597c663377d9edb711e5c63989dfeb1a0ae35ce9e3f7e55d5b939776ae"
   license "MIT"
 
   depends_on "tmux"
